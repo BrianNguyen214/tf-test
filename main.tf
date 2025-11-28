@@ -55,7 +55,7 @@ data "aws_vpc" "selected" {
 resource "aws_instance" "tc_instance" {
   ami                         = data.aws_ami.ubuntu.id
   instance_type               = "t3.micro"
-  subnet_id                   = data.aws_subnet_ids.selected.ids[0]
+  subnet_id                   = tolist(data.aws_subnet_ids.selected.ids)[0]
   associate_public_ip_address = true
 
   tags = {
