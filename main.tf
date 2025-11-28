@@ -4,7 +4,7 @@ terraform {
   
   cloud { 
     
-    organization = "TerraformLearning120" 
+    organization = "TerraformLearning1999" 
 
     workspaces { 
       name = "tf-cloud-test" 
@@ -22,10 +22,10 @@ terraform {
 }
 
 provider "aws" {
-  region = "us-west-2"
+  region = "us-east-2"
 }
 
-# Data source to get the latest Ubuntu 22.04 LTS AMI for us-west-2
+# Data source to get the latest Ubuntu 22.04 LTS AMI for us-east-2
 data "aws_ami" "ubuntu" {
   most_recent = true
   owners      = ["099720109477"] # Canonical's AWS account ID
@@ -41,10 +41,21 @@ data "aws_ami" "ubuntu" {
   }
 }
 
+
+# Data source to get the first available subnet in us-east-2
+data "aws_subnet_ids" "selected" {
+  vpc_id = data.aws_vpc.selected.id
+}
+
+# Data source to get the default VPC in us-east-2
+data "aws_vpc" "selected" {
+  default = true
+}
+
 resource "aws_instance" "tc_instance" {
   ami                         = data.aws_ami.ubuntu.id
   instance_type               = "t3.micro"
-  subnet_id                   = "subnet-0ced54783d659b91c" # sandbox-2-vpc subnet in us-west-2a
+  subnet_id                   = data.aws_subnet_ids.selected.ids[0]
   associate_public_ip_address = true
 
   tags = {
